@@ -32,11 +32,12 @@ def login(request):
             Password=request.POST['Password']
             mod=Register.objects.get(Email=Email)
             if mod.Password==Password:
+                print("if conditions")
                 request.session['Email']=Email
                 request.session['Firstname']=mod.Firstname
                 messages.success(request,'Login Successful')              
             else:
-        
+                print("-------------Error-----------------")
                 messages.error(request,'Wrong Password')
         except:
             messages.error(request,'User Not Found')
@@ -243,10 +244,12 @@ def cart_update(request,id):
         return redirect('login')
 
 def forget(request):
+    print("Inside forget pass function")
     if request.POST:
         data = request.POST['conf']
         try:
             valid = Register.objects.get(forgot_ans=data)
+            print(valid,'*********************************')
             if valid:
                 request.session['user'] = valid.Email
                 return redirect('newpass')
@@ -257,15 +260,19 @@ def forget(request):
     return render(request, "forget.html")
 
 def newpass(request):
+    print("Inside new pass function")
     if 'user' in request.session:
+        print(request.session['user'])
         if request.POST:
             pass1 = request.POST['pass1']
             pass2 = request.POST['pass2']
             if pass1 == pass2:
-                obj = Register.objects.get(email=request.session['user'])
-                obj.password = pass2
+                print("Password matched")
+                obj = Register.objects.get(Email=request.session['user'])
+                obj.Password = pass2
                 obj.save()
                 del request.session['user']
+                print("changed successfully")
                 return redirect('login')
             else:
                 return render(request,'newpass.html',{ 'msg' : "Please Enter Same Password" })
